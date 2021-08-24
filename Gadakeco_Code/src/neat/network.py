@@ -1,28 +1,23 @@
-def sgn(x):
-    "Signum function"
-    if x == 0:
-        return 0
-    elif x > 0:
-        return 1
-    else:
-        return -1
+"""
+Represents the main structure of the neural network including the different types of nodes:
+    Input_node: for the value (1 or 0) represented by each of the 27x18 = 486 pixels; has only outgoing edges
+    Hidden_node: which will be connected within the network; has both incoming and outgoing edges
+    Output_node: there are three representing the possible actions "left", "right" and "jump"; has only incoming edges
+and the connecting edges.
+"""
+
 
 class Input_node:
     def __init__(self, value):
-        """
-        Der Konstruktor weist dem Input-Node den Wert 1 zu, falls der Block begehbar ist. Ansonsten wird 0 zugewiesen.
-        """
+        'Value is 1 if the corresponding block is accessible, else 0'
         self.out = value
         self.output_edges = []
 
-    def get_out(self):
-        """
-        Gibt den Output-Wert zurueck.
-        """
-        return self.out
-
-    def add_out_edge(self, edge):
+    def add_output_edge(self, edge):
         self.output_edges.append(edge)
+
+    def get_out(self):
+        return self.out
 
     def get_output_edges(self):
         return self.output_edges
@@ -36,6 +31,10 @@ class Hidden_node:
         self.output_edges = []
 
     def get_out(self):
+        """
+        Calculating the value of the node by using the given formula:
+            signum(sum over (weight of incoming edge)x(value of prior node))
+        """
         sum = 0
         for inp in self.input_edges:
             sum += inp.weight * inp.begin.get_out()
@@ -54,6 +53,7 @@ class Hidden_node:
     def get_output_edges(self):
         return self.output_edges
 
+
 class Output_node:
     def __init__(self):
         self.out = 0
@@ -61,6 +61,10 @@ class Output_node:
         self.input_edges = []
 
     def get_out(self):
+        """
+        Calculating the value of the node by using the given formula:
+            signum(sum over (weight of incoming edge)x(value of prior node))
+        """
         sum = 0
         for inp in self.input_edges:
             sum += inp.weight * inp.begin.get_out()
@@ -75,14 +79,34 @@ class Output_node:
 
 
 class Edge:
+    """
+    A directed edge with a weight between two nodes.
+
+    Attributes
+    ----------
+    begin : Input_node or Hidden_node
+    end : Hidden_node or Output_node
+    weight: int
+    """
+    # TODO: Catch exception
     def __init__(self, begin, end, weight):
-        #TO-DO: Assertion für Input-/Output-Knoten?
+        """
+        Parameters
+        ----------
+        begin : Input_node or Hidden_node
+        end : Hidden_node or Output_node
+        weight: int
+
+        Raises
+        ------
+        AssertionError : if the begin is an Output_node or the end an Input_node
+        AssertionError : if the end is in a lower or equal layer as the begin
+        """
+        # TODO: Assert that the begin is in a lower layer than the end.
+        assert (begin is not Output_node) and (end is not Input_node)
         self.begin = begin
         self.end = end
         self.weight = weight
-
-
-
 
 
 class Network:
@@ -90,23 +114,23 @@ class Network:
         self.fitness = 0
 
     def update_fitness(self, points, time):
-        """
-        Berechnet und aktualisiert den Fitness-Wert des Netzwerks 
-        basierend auf den Punkten (des 'Spielers') und der vergangenen Zeit.
-        """
+        # Calculate and updates the networks fitness value based on the players points and the time gone by.
         self.fitness = points - 50 * time
 
     def evaluate(self, values):
         """
         Wertet das Netzwerk aus. 
         
-        Argumente:
+        Parameters
+        ----------
             values: eine Liste von 27x18 = 486 Werten, welche die aktuelle diskrete Spielsituation darstellen
                     die Werte haben folgende Bedeutung:
                      1 steht fuer begehbaren Block
                     -1 steht fuer einen Gegner
                      0 leerer Raum
-        Rueckgabewert:
+
+        Returns
+        -------
             Eine Liste [a, b, c] aus 3 Boolean, welche angeben:
                 a, ob die Taste "nach Links" gedrueckt ist
                 b, ob die Taste "nach Rechts" gedrueckt ist
@@ -114,3 +138,13 @@ class Network:
         """
 
         return [False, False, False]
+
+
+def sgn(x):
+    # Returns sign of a given argument x.
+    if x == 0:
+        return 0
+    elif x > 0:
+        return 1
+    else:
+        return -1
