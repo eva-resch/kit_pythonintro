@@ -80,17 +80,6 @@ class Edge:
         self.end = end
         self.weight = weight
 
-    def get_input_edges(self):
-        return self.input_edges
-
-
-class Edge:
-    def __init__(self, begin, end, weight):
-        #TO-DO: Assertion für Input-/Output-Knoten?
-        self.begin = begin
-        self.end = end
-        self.weight = weight
-
 
 
 
