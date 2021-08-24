@@ -7,11 +7,11 @@ def sgn(x):
         return -1
 
 class Input_node:
-    def __init__(self, input):
+    def __init__(self, value):
         """
-        Der Konstruktor weißt dem Input-Node den Wert 1 zu, falls der Block begehbar ist. Ansonsten wird 0 zugewiesen.
+        Der Konstruktor weist dem Input-Node den Wert 1 zu, falls der Block begehbar ist. Ansonsten wird 0 zugewiesen.
         """
-        self.out = input
+        self.out = value
         self.output_edges = []
 
     def get_out(self):
@@ -23,23 +23,62 @@ class Input_node:
     def add_out_edge(self, edge):
         self.output_edges.append(edge)
 
+    def get_output_edges(self):
+        return self.output_edges
+
 
 class Hidden_node:
-    def __init__(self):
-        self.input = None
-        self.out = None
-
-    def get_input(self):
-        return self.input
+    def __init__(self, layer):
+        # self.layer = layer
+        self.out = 0
+        self.input_edges = []
+        self.output_edges = []
 
     def get_out(self):
+        sum = 0
+        for inp in self.input_edges:
+            sum += inp.weight * inp.begin.get_out()
+        self.out = sgn(sum)
         return self.out
 
+    def add_input_edge(self, edge):
+        self.input_edges.append(edge)
+
+    def add_output_edge(self, edge):
+        self.output_edges.append(edge)
+
+    def get_input_edges(self):
+        return self.input_edges
+
+    def get_output_edges(self):
+        return self.output_edges
+
 class Output_node:
-    pass
+    def __init__(self):
+        self.out = 0
+        # self.layer = 100
+        self.input_edges = []
+
+    def get_out(self):
+        sum = 0
+        for inp in self.input_edges:
+            sum += inp.weight * inp.begin.get_out()
+        self.out = sgn(sum)
+        return self.out
+
+    def add_input_edge(self, edge):
+        self.input_edges.append(edge)
+
+    def get_input_edges(self):
+        return self.input_edges
 
 
-
+class Edge:
+    def __init__(self, begin, end, weight):
+        #TO-DO: Assertion für Input-/Output-Knoten?
+        self.begin = begin
+        self.end = end
+        self.weight = weight
 
 
 
