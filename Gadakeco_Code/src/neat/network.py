@@ -1,4 +1,5 @@
 def sgn(x):
+    "Signum function"
     if x == 0:
         return 0
     elif x > 0:
