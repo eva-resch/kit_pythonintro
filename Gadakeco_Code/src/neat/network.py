@@ -6,6 +6,8 @@ Represents the main structure of the neural network including the different type
 and the connecting edges.
 """
     
+from random import randint
+
 
 class Input_node:
     def __init__(self):
@@ -159,7 +161,11 @@ class Network:
 
         # Create output nodes
         for x in range(3):
-            self.nodes.append(Output_node())
+
+            #Set output node layer to 2
+            Node = Output_node()
+            Node.set_layer(2)
+            self.nodes.append(Node)
 
 
     def update_fitness(self, points, time):
@@ -197,11 +203,37 @@ class Network:
 
     # TODO: Edge mutation implementieren
     def edge_mutation(Network):
-        pass
+
+        # Step 1: choose a connection with some randomized function and try to create an edge
+        # For now: Chose a random node
+        # TODO: create actual probability distribution
+        # TODO: avoid choosing output nodes (this is actually somewhat solved at the moment because of the assertion)
+        while True:
+            # Idea: at some point we will find a connection that is allowed so we just try as long as we have to
+            try:
+                node1 = randint(0, len(Network.nodes))
+                node2 = randint(0, len(Network.nodes))
+                weight = randint(0,1)
+                if weight == 0:
+                    weight = -1
+                edge = Edge(Network.nodes(node1), Network.nodes(node2), weight)
+
+            except AssertionError:
+                continue
+
+            break
+
+        # Step 2: fill in the new edge into the network. Keep in mind that we have to update the Nodes / Layers.
+        # TODO: update input_edges for end and output_edges for begin
+        # TODO: update layer: collect all input_edges and calculate minimum layer, add +1
+        # TODO: for every node that follows after the new edge: update layer as well (recursion?)
+        Network.edges.append(edge)
+
+        return Network
 
     # TODO: Node mutation implementieren
     def node_mutation(Network):
-        pass
+        return Network
 
 def sgn(x):
     # Returns sign of a given argument x.
