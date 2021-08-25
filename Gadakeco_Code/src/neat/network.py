@@ -110,8 +110,22 @@ class Edge:
 
 
 class Network:
-    def __init__(self):
+    def __init__(self, values):
+        # TODO: Implement initial edges. The question is how we implement those (e.g. at random, all connected to all, etc.)
+        """
+        Initialize new network that has no hidden nodes (as described in the NEAT paper)
+        """
         self.fitness = 0
+        
+        # Create input nodes
+        Nodes = []
+        for value in values:
+            Nodes.append(Input_node(value))
+
+        # Create output nodes
+        for x in range(3):
+            Nodes.append(Output_node())
+
 
     def update_fitness(self, points, time):
         # Calculate and updates the networks fitness value based on the players points and the time gone by.
@@ -136,6 +150,7 @@ class Network:
                 b, ob die Taste "nach Rechts" gedrueckt ist
                 c, ob die Taste "springen" gedrueckt ist.
         """
+
 
         return [False, False, False]
 
