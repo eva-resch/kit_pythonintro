@@ -5,42 +5,11 @@ Represents the main structure of the neural network including the different type
     Output_node: there are three representing the possible actions "left", "right" and "jump"; has only incoming edges
 and the connecting edges.
 """
-
-class Node:
-    def __init__(self):
-        self.layer = 0
-        self.out = 0
-        self.input_edges = []
-        self.output_edges = []
-    
-    def get_out(self):
-        """
-        Calculating the value of the node by using the given formula:
-            signum(sum over (weight of incoming edge)x(value of prior node))
-        """
-        sum = 0
-        for inp in self.input_edges:
-            sum += inp.weight * inp.begin.get_out()
-        self.out = sgn(sum)
-        return self.out
-
-    def add_input_edge(self, edge):
-        self.input_edges.append(edge)
-
-    def add_output_edge(self, edge):
-        self.output_edges.append(edge)
-
-    def get_input_edges(self):
-        return self.input_edges
-
-    def get_output_edges(self):
-        return self.output_edges
-
     
 
 class Input_node:
     def __init__(self, value):
-        'Value is 1 if the corresponding block is accessible, else 0'
+        # Value is 1 if the corresponding block is accessible, if there is an enemy -1, else 0.
         self.out = value
         self.output_edges = []
 
@@ -85,12 +54,14 @@ class Hidden_node:
         return self.output_edges
 
 
+# TODO: lassen wir das so? Oder speichern wir das implizit?
 class Output_node:
     def __init__(self):
         self.out = 0
         # self.layer = 100
         self.input_edges = []
 
+    # TODO: Als Klassenfunktion definieren, wie signum. Muss man "aktualisieren", ggf bei Anwendung? Anderer Name?
     def get_out(self):
         """
         Calculating the value of the node by using the given formula:
@@ -119,7 +90,7 @@ class Edge:
     end : Hidden_node or Output_node
     weight: int
     """
-    # TODO: Catch exception
+    # TODO: Catch exception when used
     def __init__(self, begin, end, weight):
         """
         Parameters
@@ -132,9 +103,11 @@ class Edge:
         ------
         AssertionError : if the begin is an Output_node or the end an Input_node
         AssertionError : if the end is in a lower or equal layer as the begin
+        AssertionError: if the given weight is not 1 or -1
         """
-        # TODO: Assert that the begin is in a lower layer than the end.
         assert (begin is not Output_node) and (end is not Input_node)
+        assert begin.layer < end.layer
+        assert abs(weight) == 1
         self.begin = begin
         self.end = end
         self.weight = weight
@@ -145,18 +118,22 @@ class Network:
         # TODO: Implement initial edges. The question is how we implement those (e.g. at random, all connected to all, etc.)
         """
         Initialize new network that has no hidden nodes (as described in the NEAT paper)
+
+        ----------------------------------------------------------------------------------------------------------------
+        Careful with indices of nodes: 0-485 are the input nodes, 486, 487, 488 are the three output nodes
+        Then  we categorize all hidden nodes by their 'innovation number' -> index
         """
+        self.nodes = []
+        self.edges = []
         self.fitness = 0
         
         # Create input nodes
-        Nodes = []
         for value in values:
-            Nodes.append(Input_node(value))
+            self.nodes.append(Input_node(value))
 
         # Create output nodes
         for x in range(3):
-            Nodes.append(Output_node())
-
+            self.nodes.append(Output_node())
 
     def update_fitness(self, points, time):
         # Calculate and updates the networks fitness value based on the players points and the time gone by.
@@ -183,8 +160,9 @@ class Network:
         """
 
 
-        return [False, False, False]
+        return [self.nodes[486] > 0, self.nodes[487] > 0, self.nodes[488] > 0]
 
+    # TODO: Mutationen implementieren
 
 def sgn(x):
     # Returns sign of a given argument x.
