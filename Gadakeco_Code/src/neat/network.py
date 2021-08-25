@@ -8,9 +8,10 @@ and the connecting edges.
     
 
 class Input_node:
-    def __init__(self, value):
+    def __init__(self):
         # Value is 1 if the corresponding block is accessible, if there is an enemy -1, else 0.
-        self.out = value
+        self.layer = 1
+        self.out = None
         self.output_edges = []
 
     def add_output_edge(self, edge):
@@ -19,18 +20,24 @@ class Input_node:
     def get_out(self):
         return self.out
 
+    def reset_out(self, value):
+        self.out = value
+
     def get_output_edges(self):
         return self.output_edges
+
+    def get_layer(self):
+        return self.layer
 
 
 class Hidden_node:
-    def __init__(self, layer):
-        # self.layer = layer
-        self.out = 0
+    def __init__(self, layer=None):
+        self.layer = layer
+        self.out = None
         self.input_edges = []
         self.output_edges = []
 
-    def get_out(self):
+    def reset_out(self):
         """
         Calculating the value of the node by using the given formula:
             signum(sum over (weight of incoming edge)x(value of prior node))
@@ -39,6 +46,8 @@ class Hidden_node:
         for inp in self.input_edges:
             sum += inp.weight * inp.begin.get_out()
         self.out = sgn(sum)
+
+    def get_out(self):
         return self.out
 
     def add_input_edge(self, edge):
@@ -53,16 +62,25 @@ class Hidden_node:
     def get_output_edges(self):
         return self.output_edges
 
+    def get_layer(self):
+        return self.layer
+    
+    def set_layer(self, layer):
+        self.layer = layer
+
+
 
 # TODO: lassen wir das so? Oder speichern wir das implizit?
+# Ich denke so ist es besser, der Übersicht halber
 class Output_node:
-    def __init__(self):
-        self.out = 0
-        # self.layer = 100
+    def __init__(self, layer=None):
+        self.out = None
+        self.layer = None
         self.input_edges = []
 
     # TODO: Als Klassenfunktion definieren, wie signum. Muss man "aktualisieren", ggf bei Anwendung? Anderer Name?
-    def get_out(self):
+    # Finde es sinnvoller in der Klasse zu lassen, der Befehl ist ja jeweils gleich
+    def reset_out(self):
         """
         Calculating the value of the node by using the given formula:
             signum(sum over (weight of incoming edge)x(value of prior node))
@@ -71,6 +89,8 @@ class Output_node:
         for inp in self.input_edges:
             sum += inp.weight * inp.begin.get_out()
         self.out = sgn(sum)
+        
+    def get_out(self):
         return self.out
 
     def add_input_edge(self, edge):
@@ -78,6 +98,13 @@ class Output_node:
 
     def get_input_edges(self):
         return self.input_edges
+    
+    def get_layer(self):
+        return self.layer
+
+    def set_layer(self, layer):
+        self.layer = layer
+
 
 
 class Edge:
@@ -88,7 +115,7 @@ class Edge:
     ----------
     begin : Input_node or Hidden_node
     end : Hidden_node or Output_node
-    weight: int
+    weight: -1 or 1
     """
     # TODO: Catch exception when used
     def __init__(self, begin, end, weight):
@@ -97,7 +124,7 @@ class Edge:
         ----------
         begin : Input_node or Hidden_node
         end : Hidden_node or Output_node
-        weight: int
+        weight: -1 or 1
 
         Raises
         ------
@@ -114,8 +141,7 @@ class Edge:
 
 
 class Network:
-    def __init__(self, values):
-        # TODO: Implement initial edges. The question is how we implement those (e.g. at random, all connected to all, etc.)
+    def __init__(self):
         """
         Initialize new network that has no hidden nodes (as described in the NEAT paper)
 
@@ -128,12 +154,13 @@ class Network:
         self.fitness = 0
         
         # Create input nodes
-        for value in values:
-            self.nodes.append(Input_node(value))
+        for x in range(386):
+            self.nodes.append(Input_node())
 
         # Create output nodes
         for x in range(3):
             self.nodes.append(Output_node())
+
 
     def update_fitness(self, points, time):
         # Calculate and updates the networks fitness value based on the players points and the time gone by.
@@ -158,11 +185,23 @@ class Network:
                 b, ob die Taste "nach Rechts" gedrueckt ist
                 c, ob die Taste "springen" gedrueckt ist.
         """
+        # TODO: Netzwerk auswerten. Die Frage ist, wann das Netzwerk ausgewertet werden soll.
 
+        # Initialize input nodes with values
+        for x in range(len(values)):
+            self.nodes[x].reset_out(values(x))
+
+        
 
         return [self.nodes[486] > 0, self.nodes[487] > 0, self.nodes[488] > 0]
 
-    # TODO: Mutationen implementieren
+    # TODO: Edge mutation implementieren
+    def edge_mutation(Network):
+        pass
+
+    # TODO: Node mutation implementieren
+    def node_mutation(Network):
+        pass
 
 def sgn(x):
     # Returns sign of a given argument x.
