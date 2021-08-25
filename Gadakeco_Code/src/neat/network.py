@@ -6,6 +6,37 @@ Represents the main structure of the neural network including the different type
 and the connecting edges.
 """
 
+class Node:
+    def __init__(self):
+        self.layer = 0
+        self.out = 0
+        self.input_edges = []
+        self.output_edges = []
+    
+    def get_out(self):
+        """
+        Calculating the value of the node by using the given formula:
+            signum(sum over (weight of incoming edge)x(value of prior node))
+        """
+        sum = 0
+        for inp in self.input_edges:
+            sum += inp.weight * inp.begin.get_out()
+        self.out = sgn(sum)
+        return self.out
+
+    def add_input_edge(self, edge):
+        self.input_edges.append(edge)
+
+    def add_output_edge(self, edge):
+        self.output_edges.append(edge)
+
+    def get_input_edges(self):
+        return self.input_edges
+
+    def get_output_edges(self):
+        return self.output_edges
+
+    
 
 class Input_node:
     def __init__(self, value):
