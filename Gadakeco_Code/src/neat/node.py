@@ -3,8 +3,8 @@ class Node:
     def __init__(self, layer=None):
         self.layer = layer
         self.out = None
-        self.input_edges = []
-        self.output_edges = []
+        self.input_edges = set()
+        self.output_edges = set()
 
     def activate(self):
         """
@@ -38,10 +38,10 @@ class Node:
         return self.out
 
     def add_input_edge(self, edge):
-        self.input_edges.append(edge)
+        self.input_edges.add(edge)
 
     def add_output_edge(self, edge):
-        self.output_edges.append(edge)
+        self.output_edges.add(edge)
 
     def get_input_edges(self):
         return self.input_edges
@@ -63,7 +63,8 @@ class Hidden_node(Node):
     pass
     
 class Output_node(Node):
-    pass
+    def __init__(self):
+        super().__init__(layer=2)
 
 def sgn(x):
     # Returns sign of a given argument x.
