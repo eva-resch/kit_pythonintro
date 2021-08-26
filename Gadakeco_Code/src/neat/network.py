@@ -7,7 +7,7 @@ and the connecting edges.
 """
     
 from random import randint
-# from Nodes import *
+# from nodes import *
 
 class Input_node:
     def __init__(self):
