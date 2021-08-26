@@ -7,7 +7,7 @@ and the connecting edges.
 """
     
 from random import randint
-
+# from Nodes import *
 
 class Input_node:
     def __init__(self):
@@ -120,7 +120,7 @@ class Edge:
     weight: -1 or 1
     """
     # TODO: Catch exception when used
-    def __init__(self, begin, end, weight):
+    def __init__(self, begin: Input_node or Hidden_node, end: Hidden_node or Output_node, weight: int):
         """
         Parameters
         ----------
@@ -140,6 +140,15 @@ class Edge:
         self.begin = begin
         self.end = end
         self.weight = weight
+
+        # We can already set new incoming edges of the nodes in this constructor
+        self.begin.add_output_edge(self)
+        self.end.add_input_edge(self)
+        incoming_edges = self.end.get_input_edges()
+        
+        # TODO: need to update the layer
+            
+
 
 
 class Network:
