@@ -78,7 +78,6 @@ class Network:
             node.set_layer(2)
             self.nodes.append(node)
 
-
     def update_fitness(self, points, time):
         # Calculate and updates the networks fitness value based on the players points and the time gone by.
         self.fitness = points - 50 * time
@@ -114,34 +113,37 @@ class Network:
 
         return [left, right, jump]
 
-    # TODO: Edge mutation implementieren
-    def edge_mutation(Network):
+    def get_fitness(self):
+        return self.fitness
 
-        # Step 1: choose a connection with some randomized function and try to create an edge
-        # For now: Chose a random node
-        # TODO: create actual probability distribution
-        # TODO: avoid choosing output nodes (this is actually somewhat solved at the moment because of the assertion)
-        while True:
-            # Idea: at some point we will find a connection that is allowed so we just try as long as we have to
-            try:
-                node1 = randint(0, len(Network.nodes))
-                node2 = randint(0, len(Network.nodes))
-                weight = randint(0,1)
-                if weight == 0:
-                    weight = -1
-                # When initialising a new edge, layers update automatically for all following nodes
-                edge = Edge(Network.nodes[node1], Network.nodes[node2], weight)
+# TODO: Soll die Funktion der Klasse Network zugeordnet werden?
+def edge_mutation(Network):
 
-            except AssertionError:
-                continue
+    # Step 1: choose a connection with some randomized function and try to create an edge
+    # For now: Chose a random node
+    # TODO: create actual probability distribution
+    # TODO: avoid choosing output nodes (this is actually somewhat solved at the moment because of the assertion)
+    while True:
+        # Idea: at some point we will find a connection that is allowed so we just try as long as we have to
+        try:
+            node1 = randint(0, len(Network.nodes))
+            node2 = randint(0, len(Network.nodes))
+            weight = randint(0,1)
+            if weight == 0:
+                weight = -1
+            # When initialising a new edge, layers update automatically for all following nodes
+            edge = Edge(Network.nodes[node1], Network.nodes[node2], weight)
 
-            break
+        except AssertionError:
+            continue
 
-        # Step 2: fill in the new edge into the network.
-        Network.edges.append(edge)
+        break
 
-        return Network
+    # Step 2: fill in the new edge into the network.
+    Network.edges.append(edge)
 
-    # TODO: Node mutation implementieren
-    def node_mutation(Network):
-        return Network
+    return Network
+
+# TODO: Node mutation implementieren
+def node_mutation(Network):
+    return Network
