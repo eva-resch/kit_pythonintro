@@ -6,7 +6,7 @@ class Node:
         self.input_edges = []
         self.output_edges = []
 
-    def reset_out(self):
+    def activate(self):
         """
         Calculating the value of the node by using the given formula:
             signum(sum over (weight of incoming edge)x(value of prior node))
@@ -15,6 +15,10 @@ class Node:
         for inp in self.input_edges:
             sum += inp.weight * inp.begin.get_out()
         self.out = sgn(sum)
+
+    def set_out(self, value):
+        # For setting the initial values for input nodes
+        self.out = value
 
     def update(self):
         #TODO: Document
@@ -25,7 +29,7 @@ class Node:
         minimum = min(layers)
 
         if minimum + 1 < self.layer:
-            self.layer = minimum
+            self.layer = minimum + 1
             # TODO: attention with output nodes, are there any possible problems (e.g. None reference)?
             for edge in self.output_edges:
                 edge.end.update()

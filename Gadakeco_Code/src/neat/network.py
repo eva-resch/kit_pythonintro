@@ -106,11 +106,13 @@ class Network:
 
         # Initialize input nodes with values
         for x in range(len(values)):
-            self.nodes[x].reset_out(values(x))
-
+            self.nodes[x].set_out(values(x))
         
+        left = self.nodes[486].get_out() > 0
+        right = self.nodes[487].get_out() > 0
+        jump = self.nodes[488].get_out() > 0
 
-        return [self.nodes[486] > 0, self.nodes[487] > 0, self.nodes[488] > 0]
+        return [left, right, jump]
 
     # TODO: Edge mutation implementieren
     def edge_mutation(Network):
@@ -127,17 +129,15 @@ class Network:
                 weight = randint(0,1)
                 if weight == 0:
                     weight = -1
-                edge = Edge(Network.nodes(node1), Network.nodes(node2), weight)
+                # When initialising a new edge, layers update automatically for all following nodes
+                edge = Edge(Network.nodes[node1], Network.nodes[node2], weight)
 
             except AssertionError:
                 continue
 
             break
 
-        # Step 2: fill in the new edge into the network. Keep in mind that we have to update the Nodes / Layers.
-        # TODO: update input_edges for end and output_edges for begin
-        # TODO: update layer: collect all input_edges and calculate minimum layer, add +1
-        # TODO: for every node that follows after the new edge: update layer as well (recursion?)
+        # Step 2: fill in the new edge into the network.
         Network.edges.append(edge)
 
         return Network
