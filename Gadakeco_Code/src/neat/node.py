@@ -1,7 +1,28 @@
-
 class Node:
+    """
+    Represents a general node in the network modelled in src/neat/network.
+
+    Attributes
+    ----------
+        layer: int
+            indicates distance to input layer; gets updated with every new incoming edge.
+        out: int
+            gives the value of the node; is calculated in 'activate' by the values of the incoming edges.
+        input_edges: set(Edge)
+            all the incoming edges of this node.
+        output_edges: set(Edge)
+            all the outgoing edges of this node.
+
+    Methods
+    -------
+        activate(self):
+            Gives back the value of this node according to the incoming edges, their weight and the value of the nodes.
+        update(self):
+            Recalculates the nodes layer after a change of the incoming edges.
+    """
     def __init__(self, layer=None):
         self.layer = layer
+        # TODO: brauchen wir das wirklich oder klappt das besser nur in "evaluate"? Bzw. können wir das überhaupt sinnvoll speichern?
         self.out = None
         self.input_edges = set()
         self.output_edges = set()
@@ -16,12 +37,13 @@ class Node:
             sum += inp.weight * inp.begin.get_out()
         self.out = sgn(sum)
 
-    def set_out(self, value):
-        # For setting the initial values for input nodes
-        self.out = value
-
     def update(self):
-        #TODO: Document
+        """
+        After a new incoming edge has been added, the layer might be different and needs to be updated.
+        First we need the layers of all predecessors, in which we will find the minimum.
+        If this minimum is smaller than the nodes layer minus 1, we adapt the layer to minimum+1 and continue
+        recursively on the following nodes with the same function. If the minimum is only by 1 smaller, nothing changes.
+        """
         layers = []
         for edge in self.input_edges:
             layers.append(edge.begin.get_layer())
@@ -58,6 +80,10 @@ class Node:
 class Input_node(Node):
     def __init__(self):
         super().__init__(layer=1)
+
+    def set_out(self, value):
+        # For setting the initial values for input nodes
+        self.out = value
 
 class Hidden_node(Node):
     pass

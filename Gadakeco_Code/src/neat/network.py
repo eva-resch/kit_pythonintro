@@ -21,8 +21,6 @@ class Edge:
     end : Node
     weight: -1 or 1
     """
-
-    # TODO: Catch exception when used
     def __init__(self, begin: Node, end: Node, weight: int):
         """
         Raises an AssertionError for invalid input, else sets the attributes.
@@ -58,6 +56,23 @@ class Edge:
 
 
 class Network:
+    """
+    Simulates a neural network trained in the process NEAT with all nodes and edges.
+    Used by src/neat/population as an individuum within the described population.py
+
+    Methods
+    -------
+        update_fitness(self, points, time):
+            Given the formula the fitness of the network 'self' will be updated
+        evaluate(self, values): [bool, bool, bool]
+            Given the 'values' representing the surroundings the next action will be determined: if the network should
+            press "left", "right" or "jump".
+        edge_mutation(self):
+            Takes the network 'self', chooses two random nodes given a certain distribution and connects them with a new
+            edge.
+        node_mutation(self):
+            Takes the network 'self', chooses a random edge and breaks it up into two with a new node inbetween.
+    """
     def __init__(self):
         """
         Initialize new network that has no hidden nodes (as described in the NEAT paper).
@@ -67,8 +82,7 @@ class Network:
         Then  we categorize all hidden nodes by their 'innovation number' -> index
         """
 
-        #TODO: Kanten müssen als Menge und nicht Liste implementiert werden, damit finden und löschen anhand der ID möglich ist
-        # -> gemacht! Gerne Augen aufhalten wegen mögl. Fehlern.
+        # Edges are implemented as a set to make removing easier, nodes as a list to make indexing easier.
         self.nodes = []
         self.edges = set()
         self.fitness = 0
@@ -120,8 +134,16 @@ class Network:
         return self.fitness
 
     def edge_mutation(self):
-        # Step 1: choose a connection with some randomized function and try to create an edge
-        # For now: Chose a random node
+        """
+        Function to mutate the given network 'self' by adding a new edge.
+        Therefore one node will be chosen to be the beginning: proportional to the number of both input and hidden nodes
+        either a hidden node following a equal distribution or an input node following a normal distribution centered
+        around the position of the playing figure will be used.
+        The ending node will be chosen out of the hidden and output nodes following an equal distribution.
+        The weight of the edge will be random either 1 or -1.
+        The resulting edge must be both valid and non-existing in the network.
+        Now we can add the edge to the network, this includes updating.
+        """
         # TODO: create actual probability distribution
         # TODO: avoid choosing output nodes (this is actually somewhat solved at the moment because of the assertion)
         while True:
@@ -137,18 +159,18 @@ class Network:
                 # Check if the edge exists already.
                 if edge in self.edges:
                     continue
-
             except AssertionError:
                 continue
-
             break
 
-        # Step 2: fill in the new edge into the network.
         self.edges.add(edge)
 
-    # TODO: Node mutation implementieren
     def node_mutation(self):
-        # Choose random edge -> needs list for indexing, not set!
+        """
+        Function to mutate the network 'self' by splitting up an edge and inserting a new node.
+        The edge is chosen at random and then the updating steps take place with creating the new node and edges, adding
+        the new edges and removing the old ones.
+        """
         edge_index = randint(0, len(self.edges))
         edge = list(self.edges)[edge_index]
         begin_node = edge.begin
@@ -174,6 +196,3 @@ class Network:
 
         end_node.get_input_edge.remove(edge)
         end_node.add_input_edge(new_edge_2)
-
-        # Update layers for 'end_node' and all their successors
-        end_node.update()

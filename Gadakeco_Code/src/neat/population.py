@@ -1,4 +1,4 @@
-from src.neat.network import Network, edge_mutation, node_mutation
+from src.neat.network import Network
 from time import time
 from pickle import dump, load
 import numpy as np
@@ -43,7 +43,7 @@ class Population:
         self.current_generation = []
         for i in range(size):
             new = Network()
-            self.current_generation.append(edge_mutation(new))
+            self.current_generation.append(new.edge_mutation())
 
     @staticmethod
     def load_from_file(filename):
@@ -81,9 +81,9 @@ class Population:
         # Step 3
         for i in range(8):
             for net in new_10:
-                new_generation.append(edge_mutation(deepcopy(net)))
+                new_generation.append(deepcopy(net).edge_mutation())
 
         for net in new_10:
-            new_generation.append(node_mutation(deepcopy(net)))
+            new_generation.append(deepcopy(net).node_mutation())
 
         return new_generation
