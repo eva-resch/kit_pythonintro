@@ -16,6 +16,20 @@ class Node:
             sum += inp.weight * inp.begin.get_out()
         self.out = sgn(sum)
 
+    def update(self):
+        #TODO: Document
+        layers = []
+        for edge in self.input_edges:
+            layers.append(edge.begin.get_layer())
+
+        minimum = min(layers)
+
+        if minimum + 1 < self.layer:
+            self.layer = minimum
+            # TODO: attention with output nodes, are there any possible problems (e.g. None reference)?
+            for edge in self.output_edges:
+                edge.end.update()
+
     def get_out(self):
         return self.out
 

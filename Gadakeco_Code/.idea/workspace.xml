@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="361cd424-ba71-44c3-93ee-afc0212e5883" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/neat/Nodes.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/neat/node.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/neat/network.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/neat/network.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -34,5 +35,16 @@
       <updated>1629794935840</updated>
     </task>
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

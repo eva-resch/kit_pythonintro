@@ -7,106 +7,7 @@ and the connecting edges.
 """
     
 from random import randint
-# from nodes import *
-
-class Input_node:
-    def __init__(self):
-        # Value is 1 if the corresponding block is accessible, if there is an enemy -1, else 0.
-        self.layer = 1
-        self.out = None
-        self.output_edges = []
-
-    def add_output_edge(self, edge):
-        self.output_edges.append(edge)
-
-    def get_out(self):
-        return self.out
-
-    def reset_out(self, value):
-        self.out = value
-
-    def get_output_edges(self):
-        return self.output_edges
-
-    def get_layer(self):
-        return self.layer
-
-
-class Hidden_node:
-    def __init__(self, layer=None):
-        self.layer = layer
-        self.out = None
-        self.input_edges = []
-        self.output_edges = []
-
-    def reset_out(self):
-        """
-        Calculating the value of the node by using the given formula:
-            signum(sum over (weight of incoming edge)x(value of prior node))
-        """
-        sum = 0
-        for inp in self.input_edges:
-            sum += inp.weight * inp.begin.get_out()
-        self.out = sgn(sum)
-
-    def get_out(self):
-        return self.out
-
-    def add_input_edge(self, edge):
-        self.input_edges.append(edge)
-
-    def add_output_edge(self, edge):
-        self.output_edges.append(edge)
-
-    def get_input_edges(self):
-        return self.input_edges
-
-    def get_output_edges(self):
-        return self.output_edges
-
-    def get_layer(self):
-        return self.layer
-    
-    def set_layer(self, layer):
-        self.layer = layer
-
-
-
-# TODO: lassen wir das so? Oder speichern wir das implizit?
-# Ich denke so ist es besser, der Übersicht halber
-class Output_node:
-    def __init__(self, layer=None):
-        self.out = None
-        self.layer = None
-        self.input_edges = []
-
-    # TODO: Als Klassenfunktion definieren, wie signum. Muss man "aktualisieren", ggf bei Anwendung? Anderer Name?
-    # Finde es sinnvoller in der Klasse zu lassen, der Befehl ist ja jeweils gleich
-    def reset_out(self):
-        """
-        Calculating the value of the node by using the given formula:
-            signum(sum over (weight of incoming edge)x(value of prior node))
-        """
-        sum = 0
-        for inp in self.input_edges:
-            sum += inp.weight * inp.begin.get_out()
-        self.out = sgn(sum)
-        
-    def get_out(self):
-        return self.out
-
-    def add_input_edge(self, edge):
-        self.input_edges.append(edge)
-
-    def get_input_edges(self):
-        return self.input_edges
-    
-    def get_layer(self):
-        return self.layer
-
-    def set_layer(self, layer):
-        self.layer = layer
-
+from node import *
 
 
 class Edge:
@@ -120,12 +21,12 @@ class Edge:
     weight: -1 or 1
     """
     # TODO: Catch exception when used
-    def __init__(self, begin: Input_node or Hidden_node, end: Hidden_node or Output_node, weight: int):
+    def __init__(self, begin: Node, end: Node, weight: int):
         """
         Parameters
         ----------
-        begin : Input_node or Hidden_node
-        end : Hidden_node or Output_node
+        begin : Node
+        end : Node
         weight: -1 or 1
 
         Raises
@@ -137,17 +38,19 @@ class Edge:
         assert (begin is not Output_node) and (end is not Input_node)
         assert begin.layer < end.layer
         assert abs(weight) == 1
+
         self.begin = begin
         self.end = end
         self.weight = weight
 
         # We can already set new incoming edges of the nodes in this constructor
-        self.begin.add_output_edge(self)
-        self.end.add_input_edge(self)
-        incoming_edges = self.end.get_input_edges()
-        
-        # TODO: need to update the layer
-            
+        begin.add_output_edge(self)
+        end.add_input_edge(self)
+
+        #Update the layer of this end node, including all the following nodes.
+        end.update()
+
+
 
 
 
@@ -165,16 +68,15 @@ class Network:
         self.fitness = 0
         
         # Create input nodes
-        for x in range(386):
+        for x in range(486):
             self.nodes.append(Input_node())
 
         # Create output nodes
         for x in range(3):
-
             #Set output node layer to 2
-            Node = Output_node()
-            Node.set_layer(2)
-            self.nodes.append(Node)
+            node = Output_node()
+            node.set_layer(2)
+            self.nodes.append(node)
 
 
     def update_fitness(self, points, time):
@@ -243,12 +145,3 @@ class Network:
     # TODO: Node mutation implementieren
     def node_mutation(Network):
         return Network
-
-def sgn(x):
-    # Returns sign of a given argument x.
-    if x == 0:
-        return 0
-    elif x > 0:
-        return 1
-    else:
-        return -1
