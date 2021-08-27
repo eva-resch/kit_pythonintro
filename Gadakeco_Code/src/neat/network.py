@@ -208,6 +208,8 @@ class Network:
         self.edges.add(new_edge_2)
 
         # Update edges of 'begin_node', 'end_node' and new 'node'.
+
+        # TODO: Sollte hier nicht get_output_edges() stehen?
         begin_node.get_output_edges.remove(edge)
         begin_node.add_output_edge(new_edge_1)
 
