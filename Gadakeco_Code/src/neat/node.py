@@ -22,8 +22,7 @@ class Node:
     """
     def __init__(self, layer=None):
         self.layer = layer
-        # TODO: brauchen wir das wirklich oder klappt das besser nur in "evaluate"? Bzw. können wir das überhaupt sinnvoll speichern?
-        self.out = None
+        self.out = 0
         self.input_edges = set()
         self.output_edges = set()
 

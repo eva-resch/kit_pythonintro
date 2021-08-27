@@ -106,25 +106,29 @@ class Network:
         
         Parameters
         ----------
-            values: eine Liste von 27x18 = 486 Werten, welche die aktuelle diskrete Spielsituation darstellen
-                    die Werte haben folgende Bedeutung:
-                     1 steht fuer begehbaren Block
-                    -1 steht fuer einen Gegner
-                     0 leerer Raum
+            values: list[int]
+                representing the 27x18 = 486 pixels and their current value (1: accessible, -1: enemy, 0: empty)
 
         Returns
         -------
-            Eine Liste [a, b, c] aus 3 Boolean, welche angeben:
-                a, ob die Taste "nach Links" gedrueckt ist
-                b, ob die Taste "nach Rechts" gedrueckt ist
-                c, ob die Taste "springen" gedrueckt ist.
+            list[bool]
+                representing for each of the three options "left", "right" and "jump" if they are pressed or not.
         """
-        # TODO: Netzwerk auswerten. Die Frage ist, wann das Netzwerk ausgewertet werden soll.
 
         # Initialize input nodes with values
-        for x in range(len(values)):
-            self.nodes[x].set_out(values(x))
+        for i in range(len(values)):
+            self.nodes[i].set_out(values[i])
 
+        # Order all hidden nodes by layer and calculate their value.
+        ordered_nodes = sorted(self.nodes[489:], key=Node.get_layer)
+        for node in ordered_nodes:
+            node.activate()
+
+        # Evaluate the three output nodes.
+        for i in range(3):
+            self.nodes[485+i].activate()
+
+        # Booleans representing, if the button should be pressed or not.
         left = self.nodes[486].get_out() > 0
         right = self.nodes[487].get_out() > 0
         jump = self.nodes[488].get_out() > 0
