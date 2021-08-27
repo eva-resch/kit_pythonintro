@@ -7,7 +7,8 @@ and the connecting edges.
 """
 
 import numpy as np
-from random import randint
+import math
+from random import randint, gauss
 from node import *
 
 
@@ -149,6 +150,25 @@ class Network:
         while True:
             # Idea: at some point we will find a connection that is allowed so we just try as long as we have to
             try:
+                # Choose between an input and a hidden node, but not the three output nodes!
+                decision_index = randint(0, len(self.nodes)-3)
+
+                # If the 'decision_index' is in the range 0-485 an input node will be chosen, else a hidden node.
+                if decision_index < 486:
+                    row = gauss(8.5, math.sqrt(8.5))
+
+                    col = gauss(9, 9)
+                    if col <= 9:
+                        col = max(0, math.ceil(col))
+                    else:
+                        col = min(26, math.floor(col))
+
+                    input_node = self.nodes[row*27 + col]
+
+
+
+
+
                 node1 = randint(0, len(self.nodes))
                 node2 = randint(0, len(self.nodes))
                 weight = randint(0, 1)
