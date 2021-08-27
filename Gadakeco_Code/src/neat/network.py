@@ -153,10 +153,22 @@ class Network:
 
                 # If the 'decision_index' is in the range 0-485 an input node will be chosen, else a hidden node.
                 if decision_index < 486:
+                    # TODO: wollen wir wirklich auch die Position, an der die Figur gerade steht so stark bewerten?
+                    mean_row = 8.5
+                    sd_row = math.sqrt(8.5)
+                    mean_col = 9
+                    sd_col = math.sqrt(17)
+
                     # TODO: Fragestunde!! Ist die Auswahl der Spalten unabh. von der der Zeilen oder brauchen wir Kovarianzmatrix für multivariate Normalverteilung?
-                    # TODO: Überlegen, ob das so stimmt
-                    row = np.random.binomial(17, 0.5)
-                    col = np.random.binomial(26, 9/26)
+                    # Try to find values within the grid of pixels (27x18)
+                    while True:
+                        [row, col] = np.random.normal([mean_row, mean_col], [[sd_row, 0], [0, sd_col]])
+                        if (0 < row < 18) and (0 < col < 27):
+                            break
+
+                    # Match the found values to a specific row and column
+                    row = math.floor(row)
+                    col = math.floor(col)
                     index_1 = 27*row + col
                 else:
                     # Choose a hidden node following a discrete equal distribution.
