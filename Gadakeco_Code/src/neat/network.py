@@ -155,14 +155,16 @@ class Network:
 
                 # If the 'decision_index' is in the range 0-485 an input node will be chosen, else a hidden node.
                 if decision_index < 486:
-                    row = gauss(8.5, math.sqrt(8.5))
 
-                    col = gauss(9, 9)
-                    if col <= 9:
-                        col = max(0, math.ceil(col))
-                    else:
-                        col = min(26, math.floor(col))
+                    while True:
+                        row = gauss(8.5, math.sqrt(8.5))
+                        if 0 <= row <= 26:
+                            break
 
+                    while True:
+                        col = gauss(9, 9)
+                        if 0 <= col <= 17:
+                            break
                     input_node = self.nodes[row*27 + col]
 
 
