@@ -50,9 +50,11 @@ class Node:
 
         minimum = min(layers)
 
-        if minimum + 1 < self.layer:
+        if self.layer == -1:
+            # If arrived at output node, end recursive call.
+            pass
+        elif minimum + 1 < self.layer:
             self.layer = minimum + 1
-            # TODO: attention with output nodes, are there any possible problems (e.g. None reference)?
             for edge in self.output_edges:
                 edge.end.update()
 
@@ -90,7 +92,7 @@ class Hidden_node(Node):
     
 class Output_node(Node):
     def __init__(self):
-        super().__init__(layer=2)
+        super().__init__(layer=-1)
 
 def sgn(x):
     # Returns sign of a given argument x.

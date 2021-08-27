@@ -6,9 +6,9 @@ Represents the main structure of the neural network including the different type
 and the connecting edges.
 """
 
-import numpy as np
 import math
-from random import randint, gauss
+import numpy as np
+from random import randint
 from node import *
 
 
@@ -41,7 +41,7 @@ class Edge:
         AssertionError: if the given weight is not 1 or -1
         """
         assert (begin is not Output_node) and (end is not Input_node)
-        assert begin.layer < end.layer
+        assert (begin.layer < end.layer) or (end.layer == -1)
         assert abs(weight) == 1
 
         self.begin = begin
@@ -145,8 +145,6 @@ class Network:
         The resulting edge must be both valid and non-existing in the network.
         Now we can add the edge to the network, this includes updating.
         """
-        # TODO: create actual probability distribution
-        # TODO: avoid choosing output nodes (this is actually somewhat solved at the moment because of the assertion)
         while True:
             # Idea: at some point we will find a connection that is allowed so we just try as long as we have to
             try:
@@ -155,37 +153,45 @@ class Network:
 
                 # If the 'decision_index' is in the range 0-485 an input node will be chosen, else a hidden node.
                 if decision_index < 486:
+                    # TODO: Fragestunde!! Ist die Auswahl der Spalten unabh. von der der Zeilen oder brauchen wir Kovarianzmatrix für multivariate Normalverteilung?
+                    # TODO: Überlegen, ob das so stimmt
+                    row = np.random.binomial(17, 0.5)
+                    col = np.random.binomial(26, 9/26)
+                    index_1 = 27*row + col
+                else:
+                    # Choose a hidden node following a discrete equal distribution.
+                    index_1 = randint(489, len(self.nodes))
 
-                    while True:
-                        row = gauss(8.5, math.sqrt(8.5))
-                        if 0 <= row <= 26:
-                            break
+                index_2 = randint(486, len(self.nodes))
+                node_1 = self.nodes[index_1]
+                node_2 = self.nodes[index_2]
 
-                    while True:
-                        col = gauss(9, 9)
-                        if 0 <= col <= 17:
-                            break
-                    input_node = self.nodes[row*27 + col]
-
-
-
-
-
-                node1 = randint(0, len(self.nodes))
-                node2 = randint(0, len(self.nodes))
                 weight = randint(0, 1)
                 if weight == 0:
                     weight = -1
+
                 # When initialising a new edge, layers update automatically for all following nodes
-                edge = Edge(self.nodes[node1], self.nodes[node2], weight)
+                # Through sorting by layer an edge can be build whenever the nodes are in different layers.
+                if node_2 is Output_node:
+                    edge = Edge(node_1, node_2, weight)
+                elif node_1.get_layer() < node_2.get_layer():
+                    edge = Edge(node_1, node_2, weight)
+                # TODO: Fragestunde!! Ist das erlaubt?
+                elif node_2.get_layer() < node_1.get_layer():
+                    edge = Edge(node_2, node_1, weight)
+                else:
+                    # When the layers are the same
+                    raise AssertionError
+
                 # Check if the edge exists already.
                 if edge in self.edges:
                     continue
+
+                self.edges.add(edge)
+
             except AssertionError:
                 continue
             break
-
-        self.edges.add(edge)
 
     def node_mutation(self):
         """
@@ -200,7 +206,7 @@ class Network:
         edge_weight = edge.weight
 
         # Create new node and connecting edges
-        node = Hidden_node(layer=begin_node+1)
+        node = Hidden_node(layer=begin_node.get_layer()+1)
         new_edge_1 = Edge(begin_node, node, weight=1)
         new_edge_2 = Edge(node, end_node, edge_weight)
 
@@ -210,13 +216,11 @@ class Network:
         self.edges.add(new_edge_2)
 
         # Update edges of 'begin_node', 'end_node' and new 'node'.
-
-        # TODO: Sollte hier nicht get_output_edges() stehen?
-        begin_node.get_output_edges.remove(edge)
+        begin_node.get_output_edges().remove(edge)
         begin_node.add_output_edge(new_edge_1)
 
         node.add_input_edge(new_edge_1)
         node.add_output_edge(new_edge_2)
 
-        end_node.get_input_edge.remove(edge)
+        end_node.get_input_edge().remove(edge)
         end_node.add_input_edge(new_edge_2)
