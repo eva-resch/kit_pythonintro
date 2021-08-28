@@ -6,7 +6,7 @@ Represents the main structure of the neural network including the different type
 and the connecting edges.
 """
 
-
+# test
 class Input_node:
     def __init__(self, value):
         'Value is 1 if the corresponding block is accessible, else 0'
