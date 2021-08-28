@@ -9,7 +9,7 @@ and the connecting edges.
 import math
 import numpy as np
 from random import randint
-from node import *
+from neat.node import *
 
 
 class Edge:
@@ -88,6 +88,16 @@ class Network:
         self.edges = set()
         self.fitness = 0
 
+        # Create getter methods for the attributes of network
+        def get_nodes(self):
+            return self.nodes
+
+        def get_edges(self):
+            return self.edges
+        
+        def get_fitness(self):
+            return self.fitness
+
         # Create input nodes for the 27x18=486 pixels.
         for x in range(486):
             self.nodes.append(Input_node())
@@ -153,7 +163,7 @@ class Network:
             # Idea: at some point we will find a connection that is allowed so we just try as long as we have to
             try:
                 # Choose between an input and a hidden node, but not the three output nodes!
-                decision_index = randint(0, len(self.nodes)-3)
+                decision_index = randint(0, len(self.nodes)-4)
 
                 # If the 'decision_index' is in the range 0-485 an input node will be chosen, else a hidden node.
                 if decision_index < 486:
@@ -166,7 +176,7 @@ class Network:
                     # TODO: Fragestunde!! Ist die Auswahl der Spalten unabh. von der der Zeilen oder brauchen wir Kovarianzmatrix für multivariate Normalverteilung?
                     # Try to find values within the grid of pixels (27x18)
                     while True:
-                        [row, col] = np.random.normal([mean_row, mean_col], [[sd_row, 0], [0, sd_col]])
+                        [row, col] = np.random.multivariate_normal([mean_row, mean_col], [[sd_row, 0], [0, sd_col]])
                         if (0 < row < 18) and (0 < col < 27):
                             break
 
@@ -176,9 +186,9 @@ class Network:
                     index_1 = 27*row + col
                 else:
                     # Choose a hidden node following a discrete equal distribution.
-                    index_1 = randint(489, len(self.nodes))
+                    index_1 = randint(489, len(self.nodes)-1)
 
-                index_2 = randint(486, len(self.nodes))
+                index_2 = randint(486, len(self.nodes)-1)
                 node_1 = self.nodes[index_1]
                 node_2 = self.nodes[index_2]
 
@@ -215,7 +225,7 @@ class Network:
         The edge is chosen at random and then the updating steps take place with creating the new node and edges, adding
         the new edges and removing the old ones.
         """
-        edge_index = randint(0, len(self.edges))
+        edge_index = randint(0, len(self.edges)-1)
         edge = list(self.edges)[edge_index]
         begin_node = edge.begin
         end_node = edge.end
