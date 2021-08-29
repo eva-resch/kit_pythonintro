@@ -43,15 +43,19 @@ class Population:
         self.current_generation = []
         for i in range(size):
             new = Network()
-            self.current_generation.append(new.edge_mutation())
+            mutated = new.edge_mutation()
+            self.current_generation.append(mutated)
 
     @staticmethod
     def load_from_file(filename):
+        pickle_in = open(filename, 'rb')
+        file = load(pickle_in)
         print("called load_from_file")
-        return load(filename)
+        return file
 
     def save_to_file(self, filename):
-        dump(self, filename)
+        with open(filename, 'wb') as pickle_file:
+            dump(self, pickle_file)
         print("called save_to_file")
 
     def create_next_generation(self):
@@ -72,10 +76,10 @@ class Population:
         # TODO: Überprüfen, dass Größe nicht zu groß (oder klein) wird. (Eher zu groß, da obere Gaußklammer verwendet)
 
         # Step 1
-        ordered_current_generation = sorted(self.current_generation, reverse=True, key=Network.get_fitness)
+        ordered_current_generation = sorted(self.current_generation, reverse=True, key=Network.fitness)
 
         # Step 2
-        new_10 = ordered_current_generation[: np.ceil(0.1*len(ordered_current_generation))]
+        new_10 = ordered_current_generation[:10]
         new_generation = new_10
 
         # Step 3
