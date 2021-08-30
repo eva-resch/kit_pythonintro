@@ -40,7 +40,7 @@ class Edge:
         AssertionError : if the end is in a lower or equal layer as the begin
         AssertionError: if the given weight is not 1 or -1
         """
-        assert (begin is not Output_node) and (end is not Input_node)
+        assert (not isinstance(begin, Output_node)) and (not isinstance(end, Input_node))
         assert (begin.layer < end.layer) or (end.layer == -1)
         assert abs(weight) == 1
 
@@ -233,9 +233,15 @@ class Network:
         begin_node = edge.begin
         end_node = edge.end
         edge_weight = edge.weight
+        new_layer = begin_node.get_layer() + 1
+
+        # TODO: wollen immer maximalen Abstand für Schicht-Nummer!!
+        # Set layer of end node to push it forward if needed to make room for new node.
+        if end_node.get_layer() != -1:
+            end_node.set_layer(max(end_node.get_layer(), new_layer+1))
 
         # Create new node and connecting edges
-        node = Hidden_node(layer=begin_node.get_layer()+1)
+        node = Hidden_node(layer=new_layer)
         new_edge_1 = Edge(begin_node, node, weight=1)
         new_edge_2 = Edge(node, end_node, edge_weight)
 
