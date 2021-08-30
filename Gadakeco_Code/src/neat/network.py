@@ -88,16 +88,6 @@ class Network:
         self.edges = set()
         self.fitness = 0
 
-        # Create getter methods for the attributes of network
-        def get_nodes(self):
-            return self.nodes
-
-        def get_edges(self):
-            return self.edges
-        
-        def get_fitness(self):
-            return self.fitness
-
         # Create input nodes for the 27x18=486 pixels.
         for x in range(486):
             self.nodes.append(Input_node())
@@ -105,6 +95,16 @@ class Network:
         # Create output nodes for the 3 possible choices left, right and jump.
         for x in range(3):
             self.nodes.append(Output_node())
+
+    # Create getter methods for the attributes of network
+    def get_nodes(self):
+        return self.nodes
+
+    def get_edges(self):
+        return self.edges
+
+    def get_fitness(self):
+        return self.fitness
 
     def update_fitness(self, points, time):
         # Calculate and updates the networks fitness value based on the players points and the time gone by.
