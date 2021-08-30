@@ -3,6 +3,6 @@
     "KeyRight": 100,
     "KeySpace": 32,
     "ShowDebug": false,
-    "MusicVolume": 1.0,
-    "SoundVolume": 1.0
+    "MusicVolume": 0,
+    "SoundVolume": 0
 }

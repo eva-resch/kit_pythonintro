@@ -251,7 +251,7 @@ class Network:
         node.add_input_edge(new_edge_1)
         node.add_output_edge(new_edge_2)
 
-        end_node.get_input_edge().remove(edge)
+        end_node.get_input_edges().remove(edge)
         end_node.add_input_edge(new_edge_2)
 
         # need to return self

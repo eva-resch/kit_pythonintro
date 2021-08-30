@@ -3,6 +3,7 @@ from time import time
 from pickle import dump, load
 import numpy as np
 from copy import deepcopy
+import math
 
 
 class Population:
@@ -76,18 +77,22 @@ class Population:
         # TODO: Überprüfen, dass Größe nicht zu groß (oder klein) wird. (Eher zu groß, da obere Gaußklammer verwendet)
 
         # Step 1
-        ordered_current_generation = sorted(self.current_generation, reverse=True, key=Network.fitness)
+        ordered_current_generation = sorted(self.current_generation, reverse=True, key=Network.get_fitness)
 
         # Step 2
-        new_10 = ordered_current_generation[:10]
-        new_generation = new_10
+        new_10 = ordered_current_generation[:math.ceil(0.1*len(ordered_current_generation))]
+        new_generation = deepcopy(new_10)
 
         # Step 3
         for i in range(8):
             for net in new_10:
-                new_generation.append(deepcopy(net).edge_mutation())
+                net_copy = deepcopy(net)
+                new_generation.append(net_copy.edge_mutation())
 
         for net in new_10:
-            new_generation.append(deepcopy(net).node_mutation())
+            net_copy = deepcopy(net)
+            new_generation.append(net_copy.node_mutation())
 
-        return new_generation
+        self.current_generation = new_generation
+
+        return self
