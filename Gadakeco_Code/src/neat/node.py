@@ -39,23 +39,23 @@ class Node:
     def update(self):
         """
         After a new incoming edge has been added, the layer might be different and needs to be updated.
-        First we need the layers of all predecessors, in which we will find the minimum.
-        If this minimum is smaller than the nodes layer minus 1, we adapt the layer to minimum+1 and continue
-        recursively on the following nodes with the same function. If the minimum is only by 1 smaller, nothing changes.
+        First we need the layers of all predecessors, in which we will find the maximum.
+        Then we will set the layer to be larger than this maximum, in order to not have any conflicts with the edges.
+        If the layer is already large enough or it indicates an end node, we are finished.
         """
         layers = []
         for edge in self.input_edges:
             layers.append(edge.begin.get_layer())
 
-        minimum = min(layers)
+        maximum = max(layers)
 
         if self.layer == -1:
             # If arrived at output node, end recursive call.
             pass
-        elif minimum + 1 < self.layer:
-            self.layer = minimum + 1
-            for edge in self.output_edges:
-                edge.end.update()
+        elif self.layer <= maximum:
+            self.layer = maximum + 1
+            for next in self.output_edges:
+                next.end.update()
 
     def get_out(self):
         return self.out
