@@ -9,7 +9,7 @@ and the connecting edges.
 import math
 import numpy as np
 from random import randint
-from neat.node import *
+from src.neat.node import *
 
 
 class Edge:
@@ -246,13 +246,10 @@ class Network:
 
         # Update edges of 'begin_node', 'end_node' and new 'node'.
         begin_node.get_output_edges().remove(edge)
-        begin_node.add_output_edge(new_edge_1)
-
-        node.add_input_edge(new_edge_1)
-        node.add_output_edge(new_edge_2)
-
         end_node.get_input_edges().remove(edge)
-        end_node.add_input_edge(new_edge_2)
+
+        # Add new node to network
+        self.nodes.append(node)
 
         # need to return self
         return self
