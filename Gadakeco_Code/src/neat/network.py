@@ -198,7 +198,7 @@ class Network:
 
                 # When initialising a new edge, layers update automatically for all following nodes
                 # Through sorting by layer an edge can be build whenever the nodes are in different layers.
-                if node_2 is Output_node:
+                if isinstance(node_2, Output_node):
                     edge = Edge(node_1, node_2, weight)
                 elif node_1.get_layer() < node_2.get_layer():
                     edge = Edge(node_1, node_2, weight)
@@ -218,6 +218,9 @@ class Network:
             except AssertionError:
                 continue
             break
+
+        # need to return self!
+        return self
 
     def node_mutation(self):
         """
@@ -250,3 +253,6 @@ class Network:
 
         end_node.get_input_edge().remove(edge)
         end_node.add_input_edge(new_edge_2)
+
+        # need to return self
+        return self
