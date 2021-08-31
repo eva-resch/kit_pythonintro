@@ -108,7 +108,7 @@ class Population:
         new_generation = deepcopy(new_10)
 
         # Step 3
-        
+
         for i in range(8):
             for net in new_10:
                 net_copy = deepcopy(net)

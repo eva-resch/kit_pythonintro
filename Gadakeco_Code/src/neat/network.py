@@ -139,7 +139,6 @@ class Network:
             node = self.nodes[486+i]
             node.activate()
 
-
         # Booleans representing, if the button should be pressed or not.
         left = self.nodes[486].get_out() > 0
         right = self.nodes[487].get_out() > 0
