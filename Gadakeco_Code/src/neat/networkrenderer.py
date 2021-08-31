@@ -69,6 +69,7 @@ def render_network(surface, network, values):
         pygame.draw.rect(surface, (0, 0, 0), position, 1)
         y_pos += 5 * TILESIZE
 
+    """
     # draw hidden_nodes. For this we want to look at the layers of those nodes
 
     # first get a list of the nodes sorted by the layer
@@ -87,7 +88,7 @@ def render_network(surface, network, values):
 
     # this surface is only for reference, to see where we can draw hidden nodes. To be removed after completion
     pygame.draw.rect(surface, colors[2], (30 * TILESIZE, 0, 35 * TILESIZE, 18 * TILESIZE))
-
+    
     # draw the connecting lines
     for edge in edges:
         begin = edge.begin
@@ -101,3 +102,5 @@ def render_network(surface, network, values):
             pygame.draw.line(surface, colors[-1], begin_pos[:2], end_pos[:2], width=2)
         else:
             pygame.draw.line(surface, colors[3], begin_pos[:2], end_pos[:2], width=2)
+            
+    """

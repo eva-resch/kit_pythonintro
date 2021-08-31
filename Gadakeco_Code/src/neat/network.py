@@ -132,16 +132,21 @@ class Network:
         # Order all hidden nodes by layer and calculate their value.
         ordered_nodes = sorted(self.nodes[489:], key=Node.get_layer)
         for node in ordered_nodes:
+            node.update()
             node.activate()
 
         # Evaluate the three output nodes.
         for i in range(3):
-            self.nodes[485+i].activate()
+            node = self.nodes[485+i]
+            node.activate()
+
 
         # Booleans representing, if the button should be pressed or not.
         left = self.nodes[486].get_out() > 0
         right = self.nodes[487].get_out() > 0
         jump = self.nodes[488].get_out() > 0
+
+        output_nodes = self.nodes[486:489]
 
         return [left, right, jump]
 
@@ -165,10 +170,10 @@ class Network:
                 # If the 'decision_index' is in the range 0-485 an input node will be chosen, else a hidden node.
                 if decision_index < 486:
                     # TODO: wollen wir wirklich auch die Position, an der die Figur gerade steht so stark bewerten?
-                    mean_row = 8.5
-                    sd_row = math.sqrt(8.5)
-                    mean_col = 9
-                    sd_col = math.sqrt(17)
+                    mean_row = 12
+                    sd_row = math.sqrt(7)
+                    mean_col = 13
+                    sd_col = math.sqrt(100)
 
                     # TODO: Fragestunde!! Ist die Auswahl der Spalten unabh. von der der Zeilen oder brauchen wir Kovarianzmatrix für multivariate Normalverteilung?
                     # Try to find values within the grid of pixels (27x18)

@@ -4,6 +4,7 @@ from pickle import dump, load
 import numpy as np
 from copy import deepcopy
 import math
+import random
 
 
 class Population:
@@ -59,6 +60,10 @@ class Population:
             dump(self, pickle_file)
         print("called save_to_file")
 
+    # create function to return the starting size
+    def get_size(self):
+        return self.size
+
     def create_next_generation(self):
         """
         Step 1: Take list 'current_generation', sort in descending order by return values of given 'key'-function, in
@@ -74,13 +79,27 @@ class Population:
                     new generation with best networks and mutations
         """
 
-        # TODO: Überprüfen, dass Größe nicht zu groß (oder klein) wird. (Eher zu groß, da obere Gaußklammer verwendet)
+        # import the size of the first generation
+        size = self.get_size()
 
+        # TODO: Überprüfen, dass Größe nicht zu groß (oder klein) wird. (Eher zu groß, da obere Gaußklammer verwendet)
+        # TODO: Auch nach Kantenanzahl sortieren?
         # Step 1
         ordered_current_generation = sorted(self.current_generation, reverse=True, key=Network.get_fitness)
 
+        index = 0
+        max_fitness = ordered_current_generation[0].get_fitness()
+
+        for net in ordered_current_generation:
+            if net.get_fitness() == max_fitness:
+                index += 1
+
+        if index >= size * 0.1:
+            random.shuffle(ordered_current_generation)
+
         # Step 2
-        new_10 = ordered_current_generation[:math.ceil(0.1*len(ordered_current_generation))]
+        percent = math.floor(size * 0.1)
+        new_10 = ordered_current_generation[:percent]
         new_generation = deepcopy(new_10)
 
         # Step 3
