@@ -137,7 +137,7 @@ class Network:
 
         # Evaluate the three output nodes.
         for i in range(3):
-            node = self.nodes[485+i]
+            node = self.nodes[486+i]
             node.activate()
 
 
