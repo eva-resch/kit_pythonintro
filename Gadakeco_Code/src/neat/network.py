@@ -40,7 +40,7 @@ class Edge:
         AssertionError : if the end is in a lower or equal layer as the begin
         AssertionError: if the given weight is not 1 or -1
         """
-        assert (not isinstance(begin, Output_node)) and (not isinstance(end, Input_node))
+        assert (not isinstance(begin, OutputNode)) and (not isinstance(end, InputNode))
         assert (begin.layer < end.layer) or (end.layer == -1)
         assert abs(weight) == 1
 
@@ -90,11 +90,11 @@ class Network:
 
         # Create input nodes for the 27x18=486 pixels.
         for x in range(486):
-            self.nodes.append(Input_node())
+            self.nodes.append(InputNode())
 
         # Create output nodes for the 3 possible choices left, right and jump.
         for x in range(3):
-            self.nodes.append(Output_node())
+            self.nodes.append(OutputNode())
 
     # Create getter methods for the attributes of network
     def get_nodes(self):
@@ -144,9 +144,6 @@ class Network:
         jump = self.nodes[488].get_out() > 0
 
         return [left, right, jump]
-
-    def get_fitness(self):
-        return self.fitness
 
     def edge_mutation(self):
         """
@@ -198,7 +195,7 @@ class Network:
 
                 # When initialising a new edge, layers update automatically for all following nodes
                 # Through sorting by layer an edge can be build whenever the nodes are in different layers.
-                if isinstance(node_2, Output_node):
+                if isinstance(node_2, OutputNode):
                     edge = Edge(node_1, node_2, weight)
                 elif node_1.get_layer() < node_2.get_layer():
                     edge = Edge(node_1, node_2, weight)
@@ -241,7 +238,7 @@ class Network:
             end_node.set_layer(max(end_node.get_layer(), new_layer+1))
 
         # Create new node and connecting edges
-        node = Hidden_node(layer=new_layer)
+        node = HiddenNode(layer=new_layer)
         new_edge_1 = Edge(begin_node, node, weight=1)
         new_edge_2 = Edge(node, end_node, edge_weight)
 

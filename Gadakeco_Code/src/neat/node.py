@@ -32,8 +32,8 @@ class Node:
             signum(sum over (weight of incoming edge)x(value of prior node))
         """
         sum = 0
-        for inp in self.input_edges:
-            sum += inp.weight * inp.begin.get_out()
+        for edge in self.input_edges:
+            sum += edge.weight * edge.begin.get_out()
         self.out = sgn(sum)
 
     def update(self):
@@ -41,6 +41,7 @@ class Node:
         After a new incoming edge has been added, the layer might be different and needs to be updated.
         First we need the layers of all predecessors, in which we will find the maximum.
         Then we will set the layer to be larger than this maximum, in order to not have any conflicts with the edges.
+        Now all the outgoing nodes need to be updated as well.
         If the layer is already large enough or it indicates an end node, we are finished.
         """
         layers = []
@@ -78,7 +79,8 @@ class Node:
     def set_layer(self, layer):
         self.layer = layer
 
-class Input_node(Node):
+
+class InputNode(Node):
     def __init__(self):
         super().__init__(layer=1)
 
@@ -86,12 +88,15 @@ class Input_node(Node):
         # For setting the initial values for input nodes
         self.out = value
 
-class Hidden_node(Node):
+
+class HiddenNode(Node):
     pass
-    
-class Output_node(Node):
+
+
+class OutputNode(Node):
     def __init__(self):
         super().__init__(layer=-1)
+
 
 def sgn(x):
     # Returns sign of a given argument x.

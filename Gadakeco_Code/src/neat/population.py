@@ -1,4 +1,4 @@
-from neat.network import Network
+from src.neat.network import Network
 from time import time
 from pickle import dump, load
 import numpy as np
