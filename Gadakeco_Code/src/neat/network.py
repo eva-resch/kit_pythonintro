@@ -243,7 +243,6 @@ class Network:
         edge_weight = edge.weight
         new_layer = begin_node.get_layer() + 1
 
-        # TODO: wollen immer maximalen Abstand für Schicht-Nummer!!
         # Set layer of end node to push it forward if needed to make room for new node.
         if end_node.get_layer() != -1:
             end_node.set_layer(max(end_node.get_layer(), new_layer+1))

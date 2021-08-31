@@ -20,7 +20,7 @@ def render_network(surface, network, values):
                  0 leerer Raum
                 Die Spielfigur befindet sich immer ca. bei der Position (10, 9) und (10, 10).
     """
-    colors = {1: (255, 255, 255), -1: (255, 0, 0), 2: (255, 0, 0, 128), 3: (0, 255, 0)}
+    colors = {1: (255, 255, 255), -1: (255, 0, 0), 2: (255, 0, 0, 128), 3: (0, 255, 0), 4: (0, 0, 0), 5: (71, 60, 139)}
     # draw slightly gray background for the minimap
     pygame.draw.rect(surface, (128, 128, 128, 128), (0, 0, 27 * TILESIZE, 18 * TILESIZE))
     # draw minimap
@@ -57,7 +57,7 @@ def render_network(surface, network, values):
     for node in input_nodes:
         if node.get_output_edges():
             position = nodes_dict[node]
-            pygame.draw.rect(surface, colors[3], position, 1)
+            pygame.draw.rect(surface, colors[5], position, 1)
 
     # draw output_nodes
     y_pos = 4 * TILESIZE
@@ -82,19 +82,25 @@ def render_network(surface, network, values):
             sort_by_layer[node.get_layer()].append(node)
 
     number_layers = len(sort_by_layer)
-    width = 35
-    height = 18
-
-
-    # next, make a list of all available positions
-    # for now, we want to work with 4 possible layers
-    available_positions = []
+    width = 35*TILESIZE
+    height = 18*TILESIZE
+    dist = 30*TILESIZE
 
     # this surface is only for reference, to see where we can draw hidden nodes. To be removed after completion
-    pygame.draw.rect(surface, colors[2], (30 * TILESIZE, 0, 35 * TILESIZE, 18 * TILESIZE))
+    pygame.draw.rect(surface, colors[2], (dist, 0, width, height))
 
-    """
-    
+    for i in range(number_layers):
+        numb = len(sort_by_layer[i+2])
+        x_pos = dist + width * (i + 1)/(number_layers + 1)
+        index_y = 0
+        for node in sort_by_layer[i+2]:
+            y_pos = height * (index_y + 1)/(numb + 1)
+            nodes_dict[node] = (x_pos, y_pos, TILESIZE, TILESIZE)
+            position = nodes_dict[node]
+            surface.fill(colors[1], position)
+            pygame.draw.rect(surface, colors[4], position, 1)
+            index_y += 1
+
     # draw the connecting lines
     for edge in edges:
         begin = edge.begin
@@ -105,8 +111,6 @@ def render_network(surface, network, values):
 
         # if weight is -1, draw red line, if weight is 1 draw green line
         if weight == -1:
-            pygame.draw.line(surface, colors[-1], begin_pos[:2], end_pos[:2], width=2)
+            pygame.draw.line(surface, colors[-1], begin_pos[:2], end_pos[:2], width=1)
         else:
-            pygame.draw.line(surface, colors[3], begin_pos[:2], end_pos[:2], width=2)
-            
-    """
+            pygame.draw.line(surface, colors[3], begin_pos[:2], end_pos[:2], width=1)
