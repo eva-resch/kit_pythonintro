@@ -35,6 +35,7 @@ def render_network(surface, network, values):
     """
     --------------------------------------------------------------------------------------------------------------------
     """
+
     # import the information we want to draw
     nodes = network.get_nodes()
     edges = network.get_edges()
