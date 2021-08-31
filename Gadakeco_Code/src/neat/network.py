@@ -147,6 +147,13 @@ class Network:
 
         output_nodes = self.nodes[486:489]
 
+        # TODO: nachdenken, ob das der beste Fix fuer das negative Fitness Problem ist
+        fitness = self.get_fitness()
+        if fitness < 0:
+            left = False
+            right = False
+            jump = False
+
         return [left, right, jump]
 
     def edge_mutation(self):
@@ -170,9 +177,9 @@ class Network:
                 if decision_index < 486:
                     # TODO: wollen wir wirklich auch die Position, an der die Figur gerade steht so stark bewerten?
                     mean_row = 12
-                    sd_row = math.sqrt(7)
+                    sd_row = 4
                     mean_col = 13
-                    sd_col = math.sqrt(100)
+                    sd_col = 15
 
                     # TODO: Fragestunde!! Ist die Auswahl der Spalten unabh. von der der Zeilen oder brauchen wir Kovarianzmatrix für multivariate Normalverteilung?
                     # Try to find values within the grid of pixels (27x18)

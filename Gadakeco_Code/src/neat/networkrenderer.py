@@ -1,4 +1,5 @@
 import pygame
+from neat.node import *
 import random
 
 TILESIZE = 10
@@ -69,18 +70,21 @@ def render_network(surface, network, values):
         pygame.draw.rect(surface, (0, 0, 0), position, 1)
         y_pos += 5 * TILESIZE
 
-    """
     # draw hidden_nodes. For this we want to look at the layers of those nodes
 
     # first get a list of the nodes sorted by the layer
-    hidden_nodes_sorted = sorted(hidden_nodes, key=node.get_layer)
 
-    # this is only for testing!
-    y_pos = 0
-    x_pos = 30 * TILESIZE
-    for node in hidden_nodes_sorted:
-        nodes_dict[node] = (y_pos, x_pos, TILESIZE, TILESIZE)
-        x_pos += 5 * TILESIZE
+    sort_by_layer = {}
+    for node in hidden_nodes:
+        if node.get_layer() not in sort_by_layer:
+            sort_by_layer[node.get_layer()] = [node]
+        else:
+            sort_by_layer[node.get_layer()].append(node)
+
+    number_layers = len(sort_by_layer)
+    width = 35
+    height = 18
+
 
     # next, make a list of all available positions
     # for now, we want to work with 4 possible layers
@@ -88,6 +92,8 @@ def render_network(surface, network, values):
 
     # this surface is only for reference, to see where we can draw hidden nodes. To be removed after completion
     pygame.draw.rect(surface, colors[2], (30 * TILESIZE, 0, 35 * TILESIZE, 18 * TILESIZE))
+
+    """
     
     # draw the connecting lines
     for edge in edges:
