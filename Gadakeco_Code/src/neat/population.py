@@ -60,14 +60,12 @@ class Population:
             dump(self, pickle_file)
         print("called save_to_file")
 
-    # create function to return the starting size
-    def get_size(self):
-        return self.size
-
     def create_next_generation(self):
         """
         Step 1: Take list 'current_generation', sort in descending order by return values of given 'key'-function, in
                 this case by fitness value
+                Since in the first generations most networks will have a similar fitness, we try to randomize the chosen
+                networks.
         Step 2: Take the first 10% of the ordered 'current_generation' to use it unmodified for new generation
                 -> 'new_10'
         Step 3: Make 8 deepcopies of 'new_10' for the 80% mutated by adding a new edge and use 'edge_mutation'
@@ -79,30 +77,38 @@ class Population:
                     new generation with best networks and mutations
         """
 
-        # import the size of the first generation
-        size = self.get_size()
-
-        # TODO: Überprüfen, dass Größe nicht zu groß (oder klein) wird. (Eher zu groß, da obere Gaußklammer verwendet)
         # TODO: Auch nach Kantenanzahl sortieren?
         # Step 1
-        ordered_current_generation = sorted(self.current_generation, reverse=True, key=Network.get_fitness)
 
+        ordered_current_generation = sorted(self.current_generation, reverse=True, key=Network.get_fitness)
+        current_size = len(ordered_current_generation)
+
+        # Find index up to which the fitness remains unchanged
         index = 0
         max_fitness = ordered_current_generation[0].get_fitness()
-
         for net in ordered_current_generation:
             if net.get_fitness() == max_fitness:
                 index += 1
 
-        if index >= size * 0.1:
+        # If many networks have the same fitness, shuffle them
+        if index >= self.size * 0.1:
+            ordered_current_generation = ordered_current_generation[:index]
             random.shuffle(ordered_current_generation)
 
         # Step 2
-        percent = math.floor(size * 0.1)
+
+        # Keep the number of networks in a generation roughly the same by rounding up or down
+        if current_size >= self.size:
+            percent = math.floor(0.1 * current_size)
+        else:
+            percent = math.ceil(0.1 * current_size)
+
+        # Take the needed networks to build a new generation
         new_10 = ordered_current_generation[:percent]
         new_generation = deepcopy(new_10)
 
         # Step 3
+        
         for i in range(8):
             for net in new_10:
                 net_copy = deepcopy(net)
