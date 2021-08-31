@@ -132,7 +132,6 @@ class Network:
         # Order all hidden nodes by layer and calculate their value.
         ordered_nodes = sorted(self.nodes[489:], key=Node.get_layer)
         for node in ordered_nodes:
-            node.update()
             node.activate()
 
         # Evaluate the three output nodes.
