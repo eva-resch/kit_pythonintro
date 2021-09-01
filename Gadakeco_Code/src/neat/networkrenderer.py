@@ -104,11 +104,17 @@ def render_network(surface, network, values):
         begin = edge.begin
         end = edge.end
         weight = edge.weight
-        begin_pos = nodes_dict[begin]
-        end_pos = nodes_dict[end]
+        begin_pos = list(nodes_dict[begin][:2])
+        end_pos = list(nodes_dict[end][:2])
+
+        # add half a TILESIZE so that the edge starts in the middle of a tile
+        begin_pos[0] += 0.5 * TILESIZE
+        begin_pos[1] += 0.5 * TILESIZE
+        end_pos[0] += 0.5 * TILESIZE
+        end_pos[1] += 0.5 * TILESIZE
 
         # if weight is -1, draw red line, if weight is 1 draw green line
         if weight == -1:
-            pygame.draw.line(surface, colors[-1], begin_pos[:2], end_pos[:2], width=1)
+            pygame.draw.line(surface, colors[-1], begin_pos, end_pos, width=1)
         else:
-            pygame.draw.line(surface, colors[3], begin_pos[:2], end_pos[:2], width=1)
+            pygame.draw.line(surface, colors[3], begin_pos, end_pos, width=1)
