@@ -83,9 +83,9 @@ class Population:
         current_size = len(ordered_current_generation)
 
         # Find index up to which the fitness remains unchanged
-        index = 1
+        index = 0
         max_fitness = ordered_current_generation[0].get_fitness()
-        while ordered_current_generation[index] == max_fitness:
+        while ordered_current_generation[index+1] == max_fitness:
             index += 1
 
         # If many networks have the same fitness, shuffle them

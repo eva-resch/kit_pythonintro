@@ -144,11 +144,8 @@ class Network:
         right = self.nodes[487].get_out() > 0
         jump = self.nodes[488].get_out() > 0
 
-        # TODO: nachdenken, ob das der beste Fix fuer das negative Fitness Problem ist
         if self.get_fitness() < 0:
-            left = False
-            right = False
-            jump = False
+            return [False, False, False]
 
         return [left, right, jump]
 
