@@ -37,7 +37,7 @@ def render_network(surface, network, values):
     --------------------------------------------------------------------------------------------------------------------
     """
 
-    # import the information we want to draw
+    # import the information we need to draw the network
     nodes = network.get_nodes()
     edges = network.get_edges()
 
@@ -45,10 +45,10 @@ def render_network(surface, network, values):
     hidden_nodes = nodes[489:]
     output_nodes = nodes[486:489]
 
-    # create a dict for the position of all nodes
+    # create a dict for the position of all nodes. This is needed to draw the edges later.
     nodes_dict = {}
 
-    # map position of input_nodes with xy coordinates
+    # map position of input_nodes with xy coordinates. For convenience we directly map the rectangle dimensions.
     for x in range(27):
         for y in range(18):
             nodes_dict[input_nodes[y * 27 + x]] = (TILESIZE * x, TILESIZE * y, TILESIZE, TILESIZE)
@@ -70,10 +70,9 @@ def render_network(surface, network, values):
         pygame.draw.rect(surface, (0, 0, 0), position, 1)
         y_pos += 5 * TILESIZE
 
-    # draw hidden_nodes. For this we want to look at the layers of those nodes
+    # draw hidden_nodes. We order the nodes by layer and layer-size.
 
-    # first get a list of the nodes sorted by the layer
-
+    # step 1: sort the nodes by layer
     sort_by_layer = {}
     for node in hidden_nodes:
         if node.get_layer() not in sort_by_layer:
@@ -81,14 +80,13 @@ def render_network(surface, network, values):
         else:
             sort_by_layer[node.get_layer()].append(node)
 
+    # step 2: define variables we need
     number_layers = len(sort_by_layer)
     width = 35*TILESIZE
     height = 18*TILESIZE
     dist = 30*TILESIZE
 
-    # this surface is only for reference, to see where we can draw hidden nodes. To be removed after completion
-    pygame.draw.rect(surface, colors[2], (dist, 0, width, height))
-
+    # step 3: arrange the nodes based on their layer and the number of nodes per layer
     for i in range(number_layers):
         numb = len(sort_by_layer[i+2])
         x_pos = dist + width * (i + 1)/(number_layers + 1)
@@ -101,7 +99,7 @@ def render_network(surface, network, values):
             pygame.draw.rect(surface, colors[4], position, 1)
             index_y += 1
 
-    # draw the connecting lines
+    # draw the edges by going through all existing edges
     for edge in edges:
         begin = edge.begin
         end = edge.end

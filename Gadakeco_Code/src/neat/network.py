@@ -106,9 +106,11 @@ class Network:
     def get_fitness(self):
         return self.fitness
 
+    # BONUS: we use a fitness function that values smaller networks
     def update_fitness(self, points, time):
+        number_edges = len(self.get_edges())
         # Calculate and updates the networks fitness value based on the players points and the time gone by.
-        self.fitness = points - 50 * time
+        self.fitness = points - (50 * time)
 
     def evaluate(self, values):
         """
@@ -139,7 +141,6 @@ class Network:
             node = self.nodes[486+i]
             node.activate()
 
-
         # Booleans representing, if the button should be pressed or not.
         left = self.nodes[486].get_out() > 0
         right = self.nodes[487].get_out() > 0
@@ -147,7 +148,7 @@ class Network:
 
         output_nodes = self.nodes[486:489]
 
-        # TODO: nachdenken, ob das der beste Fix fuer das negative Fitness Problem ist
+        # TODO: nachdenken, ob das der beste Fix fuer das negative fitness Problem ist
         fitness = self.get_fitness()
         if fitness < 0:
             left = False
@@ -177,9 +178,9 @@ class Network:
                 if decision_index < 486:
                     # TODO: wollen wir wirklich auch die Position, an der die Figur gerade steht so stark bewerten?
                     mean_row = 12
-                    sd_row = 4
-                    mean_col = 13
-                    sd_col = 15
+                    sd_row = 5
+                    mean_col = 15
+                    sd_col = 20
 
                     # TODO: Fragestunde!! Ist die Auswahl der Spalten unabh. von der der Zeilen oder brauchen wir Kovarianzmatrix für multivariate Normalverteilung?
                     # Try to find values within the grid of pixels (27x18)
