@@ -31,10 +31,10 @@ class Node:
         Calculating the value of the node by using the given formula:
             signum(sum over (weight of incoming edge)x(value of prior node))
         """
-        sum = 0
+        result = 0
         for edge in self.input_edges:
-            sum += edge.weight * edge.begin.get_out()
-        self.out = sgn(sum)
+            result += edge.get_weight() * edge.get_begin().get_out()
+        self.out = sgn(result)
 
     def update(self, current_layer):
         """
@@ -49,17 +49,15 @@ class Node:
             pass
 
         self.layer = current_layer + 1
-        for next in self.output_edges:
-            next.end.update(self.layer)
+        for next_edge in self.output_edges:
+            next_edge.get_end().update(self.layer)
+
+    # Getter methods
+    def get_layer(self):
+        return self.layer
 
     def get_out(self):
         return self.out
-
-    def add_input_edge(self, edge):
-        self.input_edges.add(edge)
-
-    def add_output_edge(self, edge):
-        self.output_edges.add(edge)
 
     def get_input_edges(self):
         return self.input_edges
@@ -67,11 +65,22 @@ class Node:
     def get_output_edges(self):
         return self.output_edges
 
-    def get_layer(self):
-        return self.layer
-    
+    # Setter method for 'layer'. 'out' will be calculated when needed.
     def set_layer(self, layer):
         self.layer = layer
+
+    # The 'input_edges' and 'output_edges' will be modified through these methods, but cannot be set separately.
+    def add_input_edge(self, edge):
+        self.input_edges.add(edge)
+
+    def remove_input_edge(self, edge):
+        self.input_edges.remove(edge)
+
+    def add_output_edge(self, edge):
+        self.output_edges.add(edge)
+
+    def remove_output_edge(self, edge):
+        self.output_edges.remove(edge)
 
 
 class InputNode(Node):

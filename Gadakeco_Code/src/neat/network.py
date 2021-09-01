@@ -39,6 +39,26 @@ class Edge:
         begin.add_output_edge(self)
         end.add_input_edge(self)
 
+    # Getter methods
+    def get_begin(self):
+        return self.begin
+
+    def get_end(self):
+        return self.end
+
+    def get_weight(self):
+        return self.weight
+
+    # Setter methods
+    def set_begin(self, begin):
+        self.begin = begin
+
+    def set_end(self, end):
+        self.end = end
+
+    def set_weight(self, weight):
+        self.weight = weight
+
 
 class Network:
     """
@@ -80,19 +100,7 @@ class Network:
         for x in range(3):
             self.nodes.append(OutputNode())
 
-    # Create getter methods for the attributes of network
-    def get_nodes(self):
-        return self.nodes
-
-    def get_edges(self):
-        return self.edges
-
-    def get_fitness(self):
-        return self.fitness
-
-    # BONUS: we use a fitness function that values smaller networks
     def update_fitness(self, points, time):
-        number_edges = len(self.get_edges())
         # Calculate and updates the networks fitness value based on the players points and the time gone by.
         self.fitness = points - (50 * time)
 
@@ -183,7 +191,8 @@ class Network:
             if weight == 0:
                 weight = -1
 
-            # Through sorting by layer an edge can be build whenever the nodes are in different layers.
+            # Adding a new edge is allowed if either the end node is an output node or lies in a higher layer than the
+            # begin node.
             if isinstance(node_2, OutputNode):
                 edge = Edge(node_1, node_2, weight)
             elif node_1.get_layer() < node_2.get_layer():
@@ -213,9 +222,9 @@ class Network:
         """
         edge_index = randint(0, len(self.edges)-1)
         edge = list(self.edges)[edge_index]
-        begin_node = edge.begin
-        end_node = edge.end
-        edge_weight = edge.weight
+        begin_node = edge.get_begin()
+        end_node = edge.get_end()
+        edge_weight = edge.get_weight()
         new_layer = begin_node.get_layer() + 1
 
         # Set layer of end node to push it forward if needed to make room for new node.
@@ -233,12 +242,35 @@ class Network:
         self.edges.add(new_edge_1)
         self.edges.add(new_edge_2)
 
-        # Update edges of 'begin_node', 'end_node' and new 'node'.
-        begin_node.get_output_edges().remove(edge)
-        end_node.get_input_edges().remove(edge)
+        # Remove replaced edge in 'begin_node' and 'end_node'.
+        begin_node.remove_input_edge(edge)
+        end_node.remove_input_edge(edge)
 
         # Add new node to network
         self.nodes.append(node)
 
         # need to return self
         return self
+
+    # Getter methods
+    def get_nodes(self):
+        return self.nodes
+
+    def get_edges(self):
+        return self.edges
+
+    def get_fitness(self):
+        return self.fitness
+
+    # 'nodes' and 'edges' will be modified through these methods, but cannot be set separately.
+    def add_node(self, node):
+        self.nodes.append(node)
+
+    def remove_node(self, index):
+        self.nodes.remove(index)
+
+    def add_edge(self, edge):
+        self.edges.add(edge)
+
+    def remove_edge(self, edge):
+        self.edges.remove(edge)

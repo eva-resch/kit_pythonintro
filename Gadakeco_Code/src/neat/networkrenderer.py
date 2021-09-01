@@ -1,6 +1,5 @@
 import pygame
 from neat.node import *
-import random
 
 TILESIZE = 10
 
@@ -48,29 +47,29 @@ def render_network(surface, network, values):
     # create a dict for the position of all nodes. This is needed to draw the edges later.
     nodes_dict = {}
 
-    # map position of input_nodes with xy coordinates. For convenience we directly map the rectangle dimensions.
-    for x in range(27):
-        for y in range(18):
-            nodes_dict[input_nodes[y * 27 + x]] = (TILESIZE * x, TILESIZE * y, TILESIZE, TILESIZE)
-
-    # draw activated input_nodes
+    # draw activated input_nodes. With index = 27*y+x the coordinates are given by the index via mod '%' and div '//'.
+    index = 0
     for node in input_nodes:
         if node.get_output_edges():
-            position = nodes_dict[node]
+            x = index % 27
+            y = index // 27
+            position = (TILESIZE * x, TILESIZE * y, TILESIZE, TILESIZE)
+            nodes_dict[input_nodes[index]] = position
             pygame.draw.rect(surface, colors[5], position, 1)
+        index += 1
 
     # draw output_nodes
     y_pos = 4 * TILESIZE
     x_pos = 70 * TILESIZE
 
     for node in output_nodes:
-        nodes_dict[node] = (x_pos, y_pos, TILESIZE, TILESIZE)
-        position = nodes_dict[node]
+        position = (x_pos, y_pos, TILESIZE, TILESIZE)
+        nodes_dict[node] = position
         surface.fill(colors[1], position)
         pygame.draw.rect(surface, (0, 0, 0), position, 1)
         y_pos += 5 * TILESIZE
 
-    # draw hidden_nodes. We order the nodes by layer and layer-size.
+    # draw hidden_nodes. We order the nodes by layer.
 
     # step 1: sort the nodes by layer
     sort_by_layer = {}
@@ -93,17 +92,17 @@ def render_network(surface, network, values):
         index_y = 0
         for node in sort_by_layer[i+2]:
             y_pos = height * (index_y + 1)/(numb + 1)
-            nodes_dict[node] = (x_pos, y_pos, TILESIZE, TILESIZE)
-            position = nodes_dict[node]
+            position = (x_pos, y_pos, TILESIZE, TILESIZE)
+            nodes_dict[node] = position
             surface.fill(colors[1], position)
             pygame.draw.rect(surface, colors[4], position, 1)
             index_y += 1
 
     # draw the edges by going through all existing edges
     for edge in edges:
-        begin = edge.begin
-        end = edge.end
-        weight = edge.weight
+        begin = edge.get_begin()
+        end = edge.get_end()
+        weight = edge.get_weight()
         begin_pos = list(nodes_dict[begin][:2])
         end_pos = list(nodes_dict[end][:2])
 
