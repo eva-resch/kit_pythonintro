@@ -1,7 +1,6 @@
 from src.neat.network import Network
 from time import time
 from pickle import dump, load
-import numpy as np
 from copy import deepcopy
 import math
 import random
