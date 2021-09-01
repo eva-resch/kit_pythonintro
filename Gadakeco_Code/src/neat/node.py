@@ -36,7 +36,7 @@ class Node:
             sum += edge.weight * edge.begin.get_out()
         self.out = sgn(sum)
 
-    def update(self):
+    def update(self, current_layer):
         """
         After a new incoming edge has been added, the layer might be different and needs to be updated.
         First we need the layers of all predecessors, in which we will find the maximum.
@@ -44,19 +44,13 @@ class Node:
         Now all the outgoing nodes need to be updated as well.
         If the layer is already large enough or it indicates an end node, we are finished.
         """
-        layers = []
-        for edge in self.input_edges:
-            layers.append(edge.begin.get_layer())
-
-        maximum = max(layers)
-
         if self.layer == -1:
             # If arrived at output node, end recursive call.
             pass
-        elif self.layer <= maximum:
-            self.layer = maximum + 1
-            for next in self.output_edges:
-                next.end.update()
+
+        self.layer = current_layer + 1
+        for next in self.output_edges:
+            next.end.update(self.layer)
 
     def get_out(self):
         return self.out
