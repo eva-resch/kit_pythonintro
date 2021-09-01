@@ -243,7 +243,7 @@ class Network:
         self.edges.add(new_edge_2)
 
         # Remove replaced edge in 'begin_node' and 'end_node'.
-        begin_node.remove_input_edge(edge)
+        begin_node.remove_output_edge(edge)
         end_node.remove_input_edge(edge)
 
         # Add new node to network
