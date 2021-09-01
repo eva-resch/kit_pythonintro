@@ -1,7 +1,6 @@
 from src.neat.network import Network
 from time import time
 from pickle import dump, load
-import numpy as np
 from copy import deepcopy
 import math
 import random
@@ -86,9 +85,8 @@ class Population:
         # Find index up to which the fitness remains unchanged
         index = 0
         max_fitness = ordered_current_generation[0].get_fitness()
-        for net in ordered_current_generation:
-            if net.get_fitness() == max_fitness:
-                index += 1
+        while ordered_current_generation[index+1] == max_fitness:
+            index += 1
 
         # If many networks have the same fitness, shuffle them
         if index >= self.size * 0.1:
@@ -108,7 +106,7 @@ class Population:
         new_generation = deepcopy(new_10)
 
         # Step 3
-        
+
         for i in range(8):
             for net in new_10:
                 net_copy = deepcopy(net)

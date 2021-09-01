@@ -24,26 +24,13 @@ class Edge:
     """
     def __init__(self, begin: Node, end: Node, weight: int):
         """
-        Raises an AssertionError for invalid input, else sets the attributes.
-        When a new edge is added, the layers might change, therefore they need to be updated. This will affect the 'end'
-        node and all their successors, as specified in the class 'Node'.
 
         Parameters
         ----------
         begin : Node
         end : Node
         weight: -1 or 1
-
-        Raises
-        ------
-        AssertionError : if the begin is an Output_node or the end an Input_node
-        AssertionError : if the end is in a lower or equal layer as the begin
-        AssertionError: if the given weight is not 1 or -1
         """
-        assert (not isinstance(begin, OutputNode)) and (not isinstance(end, InputNode))
-        assert (begin.layer < end.layer) or (end.layer == -1)
-        assert abs(weight) == 1
-
         self.begin = begin
         self.end = end
         self.weight = weight
@@ -51,9 +38,6 @@ class Edge:
         # Add information about new edge to both the 'begin' and 'end' node
         begin.add_output_edge(self)
         end.add_input_edge(self)
-
-        # Update the layer of the 'end' node, including all the following nodes.
-        end.update()
 
 
 class Network:
@@ -146,14 +130,8 @@ class Network:
         right = self.nodes[487].get_out() > 0
         jump = self.nodes[488].get_out() > 0
 
-        output_nodes = self.nodes[486:489]
-
-        # TODO: nachdenken, ob das der beste Fix fuer das negative fitness Problem ist
-        fitness = self.get_fitness()
-        if fitness < 0:
-            left = False
-            right = False
-            jump = False
+        if self.get_fitness() < 0:
+            return [False, False, False]
 
         return [left, right, jump]
 
@@ -170,62 +148,58 @@ class Network:
         """
         while True:
             # Idea: at some point we will find a connection that is allowed so we just try as long as we have to
-            try:
-                # Choose between an input and a hidden node, but not the three output nodes!
-                decision_index = randint(0, len(self.nodes)-4)
 
-                # If the 'decision_index' is in the range 0-485 an input node will be chosen, else a hidden node.
-                if decision_index < 486:
-                    # TODO: wollen wir wirklich auch die Position, an der die Figur gerade steht so stark bewerten?
-                    mean_row = 12
-                    sd_row = 5
-                    mean_col = 15
-                    sd_col = 20
+            # Choose between an input and a hidden node, but not the three output nodes!
+            decision_index = randint(0, len(self.nodes)-4)
 
-                    # TODO: Fragestunde!! Ist die Auswahl der Spalten unabh. von der der Zeilen oder brauchen wir Kovarianzmatrix für multivariate Normalverteilung?
-                    # Try to find values within the grid of pixels (27x18)
-                    while True:
-                        [row, col] = np.random.multivariate_normal([mean_row, mean_col], [[sd_row, 0], [0, sd_col]])
-                        if (0 < row < 18) and (0 < col < 27):
-                            break
+            # If the 'decision_index' is in the range 0-485 an input node will be chosen, else a hidden node.
+            if decision_index < 486:
+                # TODO: wollen wir wirklich auch die Position, an der die Figur gerade steht so stark bewerten?
+                mean_row = 12
+                sd_row = 4
+                mean_col = 13
+                sd_col = 15
 
-                    # Match the found values to a specific row and column
-                    row = math.floor(row)
-                    col = math.floor(col)
-                    index_1 = 27*row + col
-                else:
-                    # Choose a hidden node following a discrete equal distribution.
-                    index_1 = randint(489, len(self.nodes)-1)
+                # TODO: Fragestunde!! Ist die Auswahl der Spalten unabh. von der der Zeilen oder brauchen wir Kovarianzmatrix für multivariate Normalverteilung?
+                # Try to find values within the grid of pixels (27x18)
+                while True:
+                    [row, col] = np.random.multivariate_normal([mean_row, mean_col], [[sd_row, 0], [0, sd_col]])
+                    if (0 < row < 18) and (0 < col < 27):
+                        break
 
-                index_2 = randint(486, len(self.nodes)-1)
-                node_1 = self.nodes[index_1]
-                node_2 = self.nodes[index_2]
+                # Match the found values to a specific row and column
+                row = math.floor(row)
+                col = math.floor(col)
+                index_1 = 27*row + col
+            else:
+                # Choose a hidden node following a discrete equal distribution.
+                index_1 = randint(489, len(self.nodes)-1)
 
-                weight = randint(0, 1)
-                if weight == 0:
-                    weight = -1
+            index_2 = randint(486, len(self.nodes)-1)
+            node_1 = self.nodes[index_1]
+            node_2 = self.nodes[index_2]
 
-                # When initialising a new edge, layers update automatically for all following nodes
-                # Through sorting by layer an edge can be build whenever the nodes are in different layers.
-                if isinstance(node_2, OutputNode):
-                    edge = Edge(node_1, node_2, weight)
-                elif node_1.get_layer() < node_2.get_layer():
-                    edge = Edge(node_1, node_2, weight)
-                # TODO: Fragestunde!! Ist das erlaubt?
-                elif node_2.get_layer() < node_1.get_layer():
-                    edge = Edge(node_2, node_1, weight)
-                else:
-                    # When the layers are the same
-                    raise AssertionError
+            weight = randint(0, 1)
+            if weight == 0:
+                weight = -1
 
-                # Check if the edge exists already.
-                if edge in self.edges:
-                    continue
-
-                self.edges.add(edge)
-
-            except AssertionError:
+            # Through sorting by layer an edge can be build whenever the nodes are in different layers.
+            if isinstance(node_2, OutputNode):
+                edge = Edge(node_1, node_2, weight)
+            elif node_1.get_layer() < node_2.get_layer():
+                edge = Edge(node_1, node_2, weight)
+            # TODO: Fragestunde!! Ist das erlaubt?
+            elif node_2.get_layer() < node_1.get_layer():
+                edge = Edge(node_2, node_1, weight)
+            else:
+                # When the layers are the same
                 continue
+
+            # Check if the edge exists already.
+            if edge in self.edges:
+                continue
+
+            self.edges.add(edge)
             break
 
         # need to return self!
@@ -246,7 +220,8 @@ class Network:
 
         # Set layer of end node to push it forward if needed to make room for new node.
         if end_node.get_layer() != -1:
-            end_node.set_layer(max(end_node.get_layer(), new_layer+1))
+            if end_node.get_layer() == new_layer:
+                end_node.update(new_layer + 1)
 
         # Create new node and connecting edges
         node = HiddenNode(layer=new_layer)
