@@ -1,5 +1,1 @@
-# EinfPy
-
-# Dies ist die neueste Readme Datei.
-
-# Network branch von Eva
+# KIT "Einführung in Python", Sommersemester 2021
